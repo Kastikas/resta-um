@@ -7,7 +7,6 @@ from Telas import Universo as Universo
 #Definições Visuais da Primeira Tela
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 660
-BACKGROUND_COLOR =  (0,0,0)
 
 
 
@@ -20,10 +19,6 @@ def main():
     pygame.display.set_caption('Resta Um')
     clock = pygame.time.Clock()
 
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill(BACKGROUND_COLOR)
-    screen.blit(background, (0,0))
 
     while True:
         clock.tick(60)
@@ -33,7 +28,7 @@ def main():
         elif comando == "universo":
             pass
         elif comando == "jogo":
-            Game.Jogo.execute()
+            Game.Jogo(screen).execute()
         pygame.display.flip()
 
 

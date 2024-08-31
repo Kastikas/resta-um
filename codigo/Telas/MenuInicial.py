@@ -40,6 +40,7 @@ class Telas():
     def tituloDraw(self):
         #Criando a Logo e Opções
         background = self.surface
+        background.fill((0,0,0))
         botoes_menu = []
         rect_titulo = pygame.Rect(TITULO_POSITION, TITULO_SIZE)
         pygame.draw.rect(background, TITULO_BACKGROUND_COLOR, rect_titulo)
