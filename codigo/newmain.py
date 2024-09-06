@@ -1,4 +1,6 @@
 import os
+import pygame
+from pygame.locals import *
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -33,7 +35,8 @@ class Piece():
     
     def click(self, pos, list, state):
         if (self.rect.collidepoint(pos)):
-           if state[0] == True:
+           if self.active == True:
+            if state[0] == True:
                 return [self.verify_neighboors(list), self.index]
            if state[0] == False:
                 self.change_neighboors(list, state)
@@ -42,26 +45,31 @@ class Piece():
     def change_neighboors(self, list, state):
         li, lc = self.index
         if state[1][0][0] == True:
-            if state[1][1][1] == lc-2:
+            if state[1][1][1] == lc-2 and state[1][1][0] == li:
                 self.change_bool()
                 list[li][lc-1].change_bool()
                 list[li][lc-2].change_bool()
         if state[1][0][1] == True:
-            if state[1][1][1] == lc+2:
+            if state[1][1][1] == lc+2 and state[1][1][0] == li:
                 self.change_bool()
                 list[li][lc+1].change_bool()
                 list[li][lc+2].change_bool()
-        if state[1][0][2] == True:
-            if state[1][1][0] == li+2:
+        if state[1][0][2] == True :
+            if state[1][1][0] == li+2 and state[1][1][1] == lc:
                 self.change_bool()
                 list[li+1][lc].change_bool()
                 list[li+2][lc].change_bool()
         if state[1][0][3] == True:
-            if state[1][1][0] == li-2:
+            if state[1][1][0] == li-2 and state[1][1][1] == lc:
                 self.change_bool()
                 list[li-2][lc].change_bool()
                 list[li-1][lc].change_bool()
-                
+        #reset colors
+        for line in list:
+            for piece in line:
+                if piece == None:
+                    continue
+                piece.selectable(False)
             
     def verify_neighboors(self, list):
         pp = [False,False,False,False]
@@ -71,33 +79,39 @@ class Piece():
             if (list[li][lc+1] != None and list[li][lc+2] != None):
                 if (list[li][lc+2].active == False):
                     if (list[li][lc+1].active == True):
-                        list[li][lc+2].selectable()
+                        list[li][lc+2].selectable(True)
                         pp[0] = True
         #verificação pela esquerda
         if lc-2 >= 0:
             if (list[li][lc-1] != None and list[li][lc-2] != None):
                 if (list[li][lc-2].active == False):
                     if (list[li][lc-1].active == True):
-                        list[li][lc-2].selectable()
+                        list[li][lc-2].selectable(True)
                         pp[1] = True
         #verificação por cima
         if li-2 >= 0:
             if (list[li-1][lc] != None and list[li-2][lc] != None):
                 if (list[li-2][lc].active == False):
                     if (list[li-1][lc].active == True):
-                        list[li-2][lc].selectable()
+                        list[li-2][lc].selectable(True)
                         pp[2] = True
         #verificação por baixo
         if li+2 <= 6:
             if (list[li+1][lc] != None and list[li+2][lc] != None):
                 if (list[li+2][lc].active == False):
                     if (list[li+1][lc].active == True):
-                        list[li+2][lc].selectable()
+                        list[li+2][lc].selectable(True)
                         pp[3] = True
         return pp
     
-    def selectable(self):
-        self.surface.fill((0,200,0))
+    def selectable(self, make_selectable):
+        if make_selectable == True:
+            self.surface.fill((0,200,0))
+        else:
+            if self.active == True:
+                self.surface.fill(PIECE_COLOR)
+            else:
+                self.surface.fill(BACKGROUND_COLOR)
         
 
         
@@ -107,7 +121,7 @@ def main():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption('O jogo da vida')
+    pygame.display.set_caption('Resta Um')
     clock = pygame.time.Clock()
     num_of_cycles = 0
 
@@ -128,6 +142,15 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
+            if event.type == KEYDOWN:
+                if event.key == K_r:
+                    for line in l_list:
+                        for piece in line:
+                            if piece == None:
+                                continue
+                            if piece.active == False:
+                                piece.change_bool()
+                            l_list[3][3].change_bool()
             if event.type == MOUSEBUTTONDOWN:
                 px, py = event.pos
                 apx, apy = PLAY_SCREEN_POSITION
@@ -209,7 +232,4 @@ def populate_list(background):
 
 if __name__ == '__main__':
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-    import pygame
-    from pygame.locals import QUIT, MOUSEBUTTONDOWN
-
     main()
